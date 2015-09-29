@@ -77,7 +77,7 @@ function addElements() {
     save: function(win, svg) {
       mainWindow.dialog(
         {
-          type: 'SaveDialog',
+          t: 'SaveDialog',
           title: robopaint.t('modes.edit.dialogs.savetitle'),
           defaultPath: mode.settings.v.lastFile,
           filters: [
