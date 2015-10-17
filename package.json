@@ -1,6 +1,6 @@
 {
   "name": "robopaint-mode-edit",
-  "version": "0.9.6",
+  "version": "0.9.7",
   "type": "robopaint_mode",
   "author": "techninja",
   "license": "MIT",
@@ -17,6 +17,13 @@
     "dependencies": [
       "underscore",
       "mediasets"
-    ]
+    ],
+    "graphics": {
+      "icon": "images/edit_icon.svg",
+      "previews": [
+        "images/edit_preview_1.png",
+        "images/edit_preview_2.png"
+      ]
+    }
   }
 }
