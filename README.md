@@ -1,5 +1,7 @@
-# RoboPaint Edit mode
+# RoboPaint Edit/Create mode
 The default SVG Import and editing mode for RoboPaint
+
+![Edit Mode](images/edit_preview_1.png?raw=true)
 
 This module is a mode for [RoboPaint](https://github.com/evil-mad/robopaint),
 the software for drawing robots, and your

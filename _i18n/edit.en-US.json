@@ -6,8 +6,8 @@
   },
   "info":{
     "description": "Open, resize, and edit existing vector artwork.",
-    "title": "",
-    "detail": "",
+    "title": "Open, Edit & Create Graphics for Printing",
+    "detail": "Use clip-art, edit drawings, or create new art with simple drawing tools.",
     "word": "Create"
   },
   "menu": {
@@ -127,5 +127,3 @@
     "rect": "Rectangle"
   }
 }
-
-
