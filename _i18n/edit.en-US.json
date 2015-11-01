@@ -5,10 +5,9 @@
     "release": "0.9.5"
   },
   "info":{
-    "description": "Open, resize, and edit existing vector artwork.",
-    "title": "Open, Edit & Create Graphics for Printing",
-    "detail": "Use clip-art, edit drawings, or create new art with simple drawing tools.",
-    "word": "Create"
+    "name": "SVG Editor",
+    "use": "Create and Edit Drawings",
+    "detail": "Open and edit drawings, or create new art with simple drawing tools and embedded clip art."
   },
   "menu": {
     "file": {
