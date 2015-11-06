@@ -353,15 +353,7 @@ function saveBeforeQuit() {
   } catch(e) {
     console.log(e);
 
-    // If there's an external callback waiting, trigger the error
-    if (typeof robopaint.api.print.loadCallback === "function") {
-      robopaint.api.print.loadCallback({
-        status: 'failure',
-        error: e
-      });
-    } else {
-      return(robopaint.t('modes.edit.dialogs.error.transfer') + "\n\n\n" + e.message);
-    }
+    return(robopaint.t('modes.edit.dialogs.error.transfer') + "\n\n\n" + e.message);
   }
 
   robopaint.svg.save(methodDraw.canvas.svgCanvasToString());
