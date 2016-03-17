@@ -1,7 +1,7 @@
 {
   "name": "robopaint-mode-edit",
   "version": "0.9.9",
-  "type": "robopaint_mode",
+  "robopaint-type": "mode",
   "author": "techninja",
   "license": "MIT",
   "main": "edit.method-draw.js",
