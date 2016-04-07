@@ -29,18 +29,6 @@
     font-style: normal;
 }
 @font-face {
-    font-family: 'Oswald';
-    src: url('font-files/oswald-bold-webfont.woff') format('woff');
-    font-weight: bold;
-    font-style: normal;
-}
-@font-face {
-    font-family: 'Oswald';
-    src: url('font-files/oswald-light-webfont.woff') format('woff');
-    font-weight: normal;
-    font-style: normal;
-}
-@font-face {
     font-family: 'Shadows Into Light';
     src: url('font-files/shadowsintolight-webfont.woff') format('woff');
     font-weight: normal;
@@ -69,4 +57,28 @@
     src: url('font-files/simonetta-regular-webfont.woff') format('woff');
     font-weight: normal;
     font-style: normal;
+}
+@font-face {
+    font-family: 'Junction';
+    src: url('font-files/Junction-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'League Gothic';
+    src: url('font-files/League_Gothic-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Fanwood';
+    src: url('font-files/fanwood-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Fanwood';
+    src: url('font-files/fanwood_italic-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: italic;
 }

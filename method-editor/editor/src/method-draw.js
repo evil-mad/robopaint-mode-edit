@@ -29,20 +29,20 @@
     var is_ready = false;
     curConfig = {
       canvas_expansion: 1,
-      dimensions: [1056, 768],
+      dimensions: [580,400],
       initFill: {color: 'fff', opacity: 1},
       initStroke: {width: 1.5, color: '000', opacity: 1},
       initOpacity: 1,
       imgPath: 'images/',
       extPath: 'extensions/',
-      jGraduatePath: 'jgraduate/images/',
+      jGraduatePath: 'lib/jgraduate/images/',
       extensions: [],
       initTool: 'select',
       wireframe: false,
       colorPickerCSS: false,
       gridSnapping: false,
       gridColor: "#000",
-      baseUnit: 'in',
+      baseUnit: 'px',
       snappingStep: 10,
       showRulers: (svgedit.browser.isTouch()) ? false : true,
       show_outside_canvas: false,
@@ -101,16 +101,16 @@
         curConfig.extensions = opts.extensions;
       }
     }
-
+    
     // Extension mechanisms must call setCustomHandlers with two functions: opts.open and opts.save
     // opts.open's responsibilities are:
-    //   - invoke a file chooser dialog in 'open' mode
+    //  - invoke a file chooser dialog in 'open' mode
     //  - let user pick a SVG file
     //  - calls setCanvas.setSvgString() with the string contents of that file
     // opts.save's responsibilities are:
-    //  - accept the string contents of the current document
+    //  - accept the string contents of the current document 
     //  - invoke a file chooser dialog in 'save' mode
-    //   - save the file to location chosen by the user
+    //  - save the file to location chosen by the user
     Editor.setCustomHandlers = function(opts) {
       Editor.ready(function() {
         if(opts.open) {
@@ -148,54 +148,11 @@
         }
       })();
 
-      (function() {
-        $("body").toggleClass("touch", svgedit.browser.isTouch());
-        // Load config/data from URL if given
-        var urldata = $.deparam.querystring(true);
-        if(!$.isEmptyObject(urldata)) {
-          if(urldata.dimensions) {
-            urldata.dimensions = urldata.dimensions.split(',');
-          }
 
-          if(urldata.extensions) {
-            urldata.extensions = urldata.extensions.split(',');
-          }
-
-          if(urldata.bkgd_color) {
-            urldata.bkgd_color = '#' + urldata.bkgd_color;
-          }
-
-          methodDraw.setConfig(urldata);
-
-          var src = urldata.source;
-          var qstr = $.param.querystring();
-
-          if(!src) { // urldata.source may have been null if it ended with '='
-            if(qstr.indexOf('source=data:') >= 0) {
-              src = qstr.match(/source=(data:[^&]*)/)[1];
-            }
-          }
-
-          if(src) {
-            if(src.indexOf("data:") === 0) {
-              // plusses get replaced by spaces, so re-insert
-              src = src.replace(/ /g, "+");
-              Editor.loadFromDataURI(src);
-            } else {
-              Editor.loadFromString(src);
-            }
-          } else if(qstr.indexOf('paramurl=') !== -1) {
-            // Get paramater URL (use full length of remaining location.href)
-            methodDraw.loadFromURL(qstr.substr(9));
-          } else if(urldata.url) {
-            methodDraw.loadFromURL(urldata.url);
-          }
-        }
-      })();
-
+      $("body").toggleClass("touch", svgedit.browser.isTouch());
       $("#canvas_width").val(curConfig.dimensions[0]);
       $("#canvas_height").val(curConfig.dimensions[1]);
-
+      
       var extFunc = function() {
         $.each(curConfig.extensions, function() {
           var extname = this;
@@ -1920,20 +1877,21 @@
           if(!$(e.target).hasClass("disabled") && $(e.target).hasClass("menu_item")) blinker(e)
           else $('#menu_bar').removeClass('active')
 
-        }
+        }  
       }
-
+      
       $('.menu_item').on('mousedown touchstart', function(e){blinker(e)});
       $("svg, body").on('mousedown  touchstart', function(e){closer(e)});
-
+      
       var accumulatedDelta = 0
       $('#workarea').on('mousewheel', function(e, delta, deltaX, deltaY){
-        if (e.altKey) {
+        if (e.altKey || e.ctrlKey) {
           e.preventDefault();
           zoom = parseInt($("#zoom").val())
-          $("#zoom").val(parseInt(zoom + deltaY*10)).change()
+          $("#zoom").val(parseInt(zoom + deltaY*(e.altKey ? 10 : 5))).change()
         }
-      })
+      });
+      
       $('.menu_title')
         .on('mousedown', function() {
           $("#tools_shapelib").hide()
@@ -1946,27 +1904,27 @@
            $(this).parent().addClass('open');
          });
 
-
+      
       // Made public for UI customization.
       // TODO: Group UI functions into a public methodDraw.ui interface.
       Editor.addDropDown = function(elem, callback, dropUp) {
         if ($(elem).length == 0) return; // Quit if called on non-existant element
         var button = $(elem).find('button');
-
+        
         var list = $(elem).find('ul').attr('id', $(elem)[0].id + '-list');
-
+        
         if(!dropUp) {
           // Move list to place where it can overflow container
           $('#option_lists').append(list);
         }
-
+        
         var on_button = false;
         if(dropUp) {
           $(elem).addClass('dropup');
         }
-
+      
         list.find('li').bind('mouseup', callback);
-
+        
         $(window).mouseup(function(evt) {
           if(!on_button) {
             button.removeClass('down');
@@ -1974,11 +1932,11 @@
           }
           on_button = false;
         });
-
+        
         button.bind('mousedown',function() {
           if (!button.hasClass('down')) {
             button.addClass('down');
-
+            
             if(!dropUp) {
               var pos = $(elem).offset();
               // position slider
@@ -1988,7 +1946,7 @@
               });
             }
             list.show();
-
+            
             on_button = true;
           } else {
             button.removeClass('down');
@@ -2000,7 +1958,7 @@
           on_button = false;
         });
       }
-
+      
       // TODO: Combine this with addDropDown or find other way to optimize
       var addAltDropDown = function(elem, list, callback, opts) {
         var button = $(elem);
@@ -2363,9 +2321,11 @@
         $.confirm(uiStrings.notification.QwantToClear, function(ok) {
           if(!ok) return;
           setSelectMode();
+          svgCanvas.deleteSelectedElements();
           svgCanvas.clear();
           svgCanvas.setResolution(dims[0], dims[1]);
           updateCanvas(true);
+          createBackground();
           zoomImage();
           updateContextPanel();
           prepPaints();

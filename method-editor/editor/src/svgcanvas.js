@@ -135,20 +135,11 @@ var canvas = this;
 var svgdoc = container.ownerDocument;
 
 // This is a container for the document being edited, not the document itself.
-var svgroot = svgdoc.importNode(svgedit.utilities.text2xml(
-    '<svg id="svgroot" xmlns="' + svgns + '" xlinkns="' + xlinkns + '" ' +
-      'width="' + dimensions[0] + '" height="' + dimensions[1] + '" x="' + dimensions[0] + '" y="' + dimensions[1] + '" overflow="visible">' +
-      '<defs>' +
-        '<filter id="canvashadow" filterUnits="objectBoundingBox">' +
-          '<feGaussianBlur in="SourceAlpha" stdDeviation="4" result="blur"/>'+
-          '<feOffset in="blur" dx="5" dy="5" result="offsetBlur"/>'+
-          '<feMerge>'+
-            '<feMergeNode in="offsetBlur"/>'+
-            '<feMergeNode in="SourceGraphic"/>'+
-          '</feMerge>'+
-        '</filter>'+
-      '</defs>'+
-    '</svg>').documentElement, true);
+var svgroot = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+svgroot.setAttribute("width", dimensions[0]);
+svgroot.setAttribute("height", dimensions[1]);
+svgroot.id = "svgroot";
+svgroot.setAttribute("xlinkns", xlinkns);
 container.appendChild(svgroot);
 
 // The actual element that represents the final output SVG element
@@ -2374,11 +2365,12 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
     if (canvas.spaceKey) return;
     var right_click = evt.button === 2;
 
-    root_sctm = svgcontent.getScreenCTM().inverse();
-    isBotchedZoom = svgedit.browser.isGecko();
+    root_sctm = svgcontent.querySelector("g").getScreenCTM().inverse();
+
     var pt = transformPoint( evt.pageX, evt.pageY, root_sctm ),
-      mouse_x = pt.x * (isBotchedZoom ? 1 : current_zoom),
-      mouse_y = pt.y * (isBotchedZoom ? 1 : current_zoom);
+      mouse_x = pt.x * current_zoom,
+      mouse_y = pt.y * current_zoom;
+      
 
     evt.preventDefault();
 
@@ -2674,7 +2666,7 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
             "stroke-width": cur_text.stroke_width,
             "font-size": cur_text.font_size,
             "font-family": cur_text.font_family,
-            "text-anchor": "left",
+            "text-anchor": "start",
             "xml:space": "preserve",
             "opacity": cur_shape.opacity
           }
@@ -2734,8 +2726,8 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
     if(evt.button === 1 || canvas.spaceKey) return;
     var selected = selectedElements[0],
       pt = transformPoint( evt.pageX, evt.pageY, root_sctm ),
-      mouse_x = pt.x * (isBotchedZoom ? 1 : current_zoom),
-      mouse_y = pt.y * (isBotchedZoom ? 1 : current_zoom),
+      mouse_x = pt.x * current_zoom,
+      mouse_y = pt.y * current_zoom,
       shape = getElem(getId());
 
     var real_x = x = mouse_x / current_zoom;
@@ -2969,23 +2961,18 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
         },1000);
         break;
       case "line":
-        // Opera has a problem with suspendRedraw() apparently
-        var handle = null;
-        if (!window.opera) svgroot.suspendRedraw(1000);
-
         if(curConfig.gridSnapping){
           x = snapToGrid(x);
           y = snapToGrid(y);
         }
 
         var x2 = x;
-        var y2 = y;
+        var y2 = y;         
 
         if(evt.shiftKey) { var xya = snapToAngle(start_x,start_y,x2,y2); x2=xya.x; y2=xya.y; }
-
+        
         shape.setAttributeNS(null, "x2", x2);
         shape.setAttributeNS(null, "y2", y2);
-        if (!window.opera) svgroot.unsuspendRedraw(handle);
         break;
       case "foreignObject":
         // fall through
@@ -3040,10 +3027,6 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
         var c = $(shape).attr(["cx", "cy"]);
         var cx = Math.abs(start_x + (x - start_x)/2)
         var cy = Math.abs(start_y + (y - start_y)/2);
-
-        // Opera has a problem with suspendRedraw() apparently
-          handle = null;
-        if (!window.opera) svgroot.suspendRedraw(1000);
         if(curConfig.gridSnapping){
           x = snapToGrid(x);
           cx = snapToGrid(cx);
@@ -3067,7 +3050,6 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
         shape.setAttributeNS(null, "ry", ry );
         shape.setAttributeNS(null, "cx", cx );
         shape.setAttributeNS(null, "cy", cy );
-        if (!window.opera) svgroot.unsuspendRedraw(handle);
         break;
       case "fhellipse":
       case "fhrect":
@@ -3278,9 +3260,8 @@ var getMouseTarget = this.getMouseTarget = function(evt) {
           recalculateAllSelectedDimensions();
 
           // if it was being dragged/resized
-          var isBotchedZoom = svgedit.browser.isGecko();
-          r_start_x = isBotchedZoom ? r_start_x * current_zoom : r_start_x;
-          r_start_y = isBotchedZoom ? r_start_y * current_zoom : r_start_y;
+          r_start_x = r_start_x; 
+          r_start_y = r_start_y; 
           var difference_x = Math.abs(real_x-r_start_x);
           var difference_y = Math.abs(real_y-r_start_y);
 
@@ -4556,7 +4537,6 @@ var pathActions = canvas.pathActions = function() {
           if (stretchy) {
             var prev = seglist.getItem(index);
             var lastpoint = (evt.target.id === 'pathpointgrip_0');
-
             var lastgripx = mouse_x;
             var lastgripy = mouse_y;
 
@@ -4633,8 +4613,13 @@ var pathActions = canvas.pathActions = function() {
         this.lastCtrlPoint = [lastpointgrip.getAttribute('cx'), lastpointgrip.getAttribute('cy')];
       else
         this.lastCtrlPoint = [mouse_x, mouse_y]
-      if (!svgedit.path.first_grip && firstpointgrip) {
-        svgedit.path.first_grip = [firstpointgrip.getAttribute('cx'), firstpointgrip.getAttribute('cy')];
+      if (!svgedit.path.first_grip) {
+        if  (firstpointgrip) {
+          svgedit.path.first_grip = [firstpointgrip.getAttribute('cx'), firstpointgrip.getAttribute('cy')];
+        }
+        else {
+          svgedit.path.first_grip = [mouse_x, mouse_y];
+        }
       }
       // Create mode
       if(current_mode === "path") {
@@ -6920,7 +6905,6 @@ this.setResolution = function(x, y) {
     }
   }
   if (x != w || y != h) {
-    var handle = svgroot.suspendRedraw(1000);
     if(!batchCmd) {
       batchCmd = new BatchCommand("Change Image Dimensions");
     }
@@ -6939,7 +6923,6 @@ this.setResolution = function(x, y) {
     batchCmd.addSubCommand(new ChangeElementCommand(svgcontent, {"viewBox": ["0 0", w, h].join(' ')}));
 
     addCommandToHistory(batchCmd);
-    svgroot.unsuspendRedraw(handle);
     background = document.getElementById("canvas_background");
     if (background) {
       background.setAttribute("x", -1)
@@ -8066,7 +8049,6 @@ this.convertToPath = function(elem, getBBox) {
 // newValue - String or number with the new attribute value
 // elems - The DOM elements to apply the change to
 var changeSelectedAttributeNoUndo = this.changeSelectedAttributeNoUndo = function(attr, newValue, elems) {
-    var handle = svgroot.suspendRedraw(1000);
     if(current_mode == 'pathedit') {
       // Editing node
       pathActions.moveNode(attr, newValue);
@@ -8141,7 +8123,6 @@ var changeSelectedAttributeNoUndo = this.changeSelectedAttributeNoUndo = functio
         }
       } // if oldValue != newValue
     } // for each elem
-    svgroot.unsuspendRedraw(handle);
 };
 
 // Function: changeSelectedAttribute
