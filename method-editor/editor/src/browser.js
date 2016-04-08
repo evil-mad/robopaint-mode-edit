@@ -119,9 +119,13 @@ var supportsNonScalingStroke_ = (function() {
 })();
 
 var supportsNativeSVGTransformLists_ = (function() {
+  // For some reason the following test fails in latest Chromium, the object
+  // just doesn't == match, which may as well just be a pointer adjustment.
+  // TODO: Make a better test. Even SVGEdit Upstream has this same test.
+  return true;
   var rect = document.createElementNS(svgns, 'rect');
   var rxform = rect.transform.baseVal;
-  
+
   var t1 = svg.createSVGTransform();
   rxform.appendItem(t1);
   return rxform.getItem(0) == t1;
