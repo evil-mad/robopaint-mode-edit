@@ -326,18 +326,9 @@ function bindColorSelect() {
 
 // Triggered on before close or switch mode, call callback to complete operation
 mode.onClose = function(callback){
-  if (!robopaint.settings.openlast && methodDraw.canvas.undoMgr.getUndoStackSize() > 0) {
-    var r = confirm(robopaint.t('modes.edit.dialogs.confirmquit'));
-    if (r == true) {
-      saveBeforeQuit();
-      callback(); // Close/continue
-    }
-  } else {
-    saveBeforeQuit();
-    callback();
-  }
+  saveBeforeQuit();
+  callback(); // Close/continue
 };
-
 
 function saveBeforeQuit() {
   try {
