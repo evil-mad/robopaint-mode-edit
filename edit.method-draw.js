@@ -4,8 +4,7 @@
  * (SVG-edit) runs in.
  */
 
- var remote = require('remote');
- var mainWindow = remote.getCurrentWindow();
+ var mainWindow = require('electron').remote.getCurrentWindow();
  var fs = require('fs-plus');
 
 // Add in the robopaint specific Method Draw css override file
