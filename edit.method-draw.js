@@ -70,7 +70,7 @@ function removeElements() {
 
 // Add in extra Method Draw elements
 function addElements() {
-  if (!mode.settings.v.lastFile) mode.settings.v.lastFile = app.getHomeDir();
+  if (!mode.settings.v.lastFile) mode.settings.v.lastFile = app.getPath('documents');
 
   methodDraw.setCustomHandlers({
     save: function(win, svg) {
