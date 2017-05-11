@@ -1,12 +1,11 @@
 {
   "name": "robopaint-mode-edit",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "robopaint-type": "mode",
   "author": "techninja",
   "license": "MIT",
   "main": "edit.method-draw.js",
   "robopaint": {
-    "core": true,
     "debug": true,
     "i18n": "dom",
     "icon": "icon-edit",
@@ -26,5 +25,9 @@
         "images/edit_preview_2.png"
       ]
     }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/techninja/robopaint-mode-edit.git"
   }
 }
