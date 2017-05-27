@@ -10,14 +10,14 @@
     "debug": true,
     "i18n": "dom",
     "icon": "icon-edit",
-    "index": "method-editor/editor/index.html",
+    "index": "method-editor/editor/method-draw.html",
     "name": "edit",
     "opensvg": true,
     "weight": -5,
     "dependencies": [
       "underscore",
       "mediasets",
-      "jquery-early"
+      "jquery"
     ],
     "graphics": {
       "icon": "images/edit_icon.svg",
@@ -26,5 +26,8 @@
         "images/edit_preview_2.png"
       ]
     }
+  },
+  "dependencies": {
+    "jquery-migrate": "^3.0.0"
   }
 }
