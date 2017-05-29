@@ -6,7 +6,6 @@
   "license": "MIT",
   "main": "edit.method-draw.js",
   "robopaint": {
-    "core": true,
     "debug": true,
     "i18n": "dom",
     "icon": "icon-edit",
@@ -29,5 +28,9 @@
   },
   "dependencies": {
     "jquery-migrate": "^3.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/techninja/robopaint-mode-edit.git"
   }
 }
