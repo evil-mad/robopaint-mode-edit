@@ -7,11 +7,43 @@
  var mainWindow = require('electron').remote.getCurrentWindow();
  var fs = require('fs-plus');
 
-// Add in the robopaint specific Method Draw css override file
-$('<link>').attr({rel: 'stylesheet', href: "../../edit.method-draw.css"}).appendTo('head');
-
 // Mode load complete...
 mode.pageInitReady = function() {
+  // 1. Split HTML into head and body.
+  // 2. Inject Body, then HEAD (scripts should load).
+  var path = require('path');
+  var html = fs.readFileSync(
+    path.join(mode.path.dir, 'method-editor', 'editor', 'index.html'),
+    'utf-8'
+  ).toString();
+
+  var parts = html.split('<body>');
+
+  // Cleanup head
+  var head = parts[0];
+  head = head.replace(/<((!DOCTYPE )?html|(\/)?head)>/g, '');
+  head = head.replace(/lib\/jquery.js/g, path.join(
+    mode.path.dir, 'node_modules', 'jquery-migrate', 'dist', 'jquery-migrate.js'
+  ));
+  head = $('head')[0].innerHTML + head;
+
+  // Cleanup body.
+  var body = parts[1];
+  body.replace(/<\/(body|html)>/g, '');
+
+  $('body').html(body);
+  $('head').html(head);
+  setTimeout(initModeAdjustments, 10);
+};
+
+/**
+ * Change various things in method-draw to work better for use in RoboPaint.
+ * Requires that method draw is fully loaded and happy.
+ */
+function initModeAdjustments() {
+  // Add in the robopaint specific Method Draw css override file
+  $('<link>').attr({rel: 'stylesheet', href: "../../edit.method-draw.css"}).appendTo('head');
+
   // Fit Controls to the screen size
   responsiveResize();
   $(window).resize(responsiveResize);
@@ -56,7 +88,7 @@ mode.pageInitReady = function() {
       }, 250);
     });
   });
-};
+}
 
 // Remove all the Method Draw components we don't want
 function removeElements() {
