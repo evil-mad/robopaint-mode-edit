@@ -15,8 +15,7 @@
     "weight": -5,
     "dependencies": [
       "underscore",
-      "mediasets",
-      "jquery"
+      "mediasets"
     ],
     "graphics": {
       "icon": "images/edit_icon.svg",

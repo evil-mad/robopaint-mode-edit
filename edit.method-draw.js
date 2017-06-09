@@ -4,14 +4,19 @@
  * (SVG-edit) runs in.
  */
 
- var mainWindow = require('electron').remote.getCurrentWindow();
- var fs = require('fs-plus');
+var mainWindow = require('electron').remote.getCurrentWindow();
+var fs = require('fs-plus');
+var path = require('path');
+window.$ = window.jQuery = require(path.join(mode.path.dir, 'method-editor', 'editor', 'lib', 'jquery'));
+// Move the modern RP jQuery over to its own namespace.
+var $j = require('jquery');
 
 // Mode load complete...
 mode.pageInitReady = function() {
+
+//return;
   // 1. Split HTML into head and body.
   // 2. Inject Body, then HEAD (scripts should load).
-  var path = require('path');
   var html = fs.readFileSync(
     path.join(mode.path.dir, 'method-editor', 'editor', 'index.html'),
     'utf-8'
@@ -19,20 +24,20 @@ mode.pageInitReady = function() {
 
   var parts = html.split('<body>');
 
-  // Cleanup head
+  // Cleanup head.
   var head = parts[0];
   head = head.replace(/<((!DOCTYPE )?html|(\/)?head)>/g, '');
-  head = head.replace(/lib\/jquery.js/g, path.join(
-    mode.path.dir, 'node_modules', 'jquery-migrate', 'dist', 'jquery-migrate.js'
-  ));
-  head = $('head')[0].innerHTML + head;
+  //head = head.replace(/lib\/jquery.js/g, path.join(
+  //  mode.path.dir, 'node_modules', 'jquery-migrate', 'dist', 'jquery-migrate.js'
+  //));
+  head = $j('head')[0].innerHTML + head;
 
   // Cleanup body.
   var body = parts[1];
   body.replace(/<\/(body|html)>/g, '');
 
-  $('body').html(body);
-  $('head').html(head);
+  $j('body').html(body);
+  $j('head').html(head);
   setTimeout(initModeAdjustments, 10);
 };
 
@@ -42,11 +47,11 @@ mode.pageInitReady = function() {
  */
 function initModeAdjustments() {
   // Add in the robopaint specific Method Draw css override file
-  $('<link>').attr({rel: 'stylesheet', href: "../../edit.method-draw.css"}).appendTo('head');
+  $j('<link>').attr({rel: 'stylesheet', href: "../../edit.method-draw.css"}).appendTo('head');
 
   // Fit Controls to the screen size
   responsiveResize();
-  $(window).resize(responsiveResize);
+  $j(window).resize(responsiveResize);
 
   // Remove elements we don't want =============================================
   removeElements();
@@ -78,7 +83,7 @@ function initModeAdjustments() {
     }
 
     var zoomTimeout = 0;
-    $(window).resize(function(){
+    $j(window).resize(function(){
       if (zoomTimeout) {
         clearTimeout(zoomTimeout);
       }
@@ -92,12 +97,12 @@ function initModeAdjustments() {
 
 // Remove all the Method Draw components we don't want
 function removeElements() {
-  $('#canvas_panel>*, #tool_blur, #menu_bar>a, #tool_text').remove();
-  $('#tool_snap, #view_grid, #rect_panel label, #path_panel label').remove();
-  $('#g_panel label, #ellipse_panel label, #line label').remove();
-  $('#text_panel label').remove();
-  $('#tool_export').remove();
-  $('#palette').hide();
+  $j('#canvas_panel>*, #tool_blur, #menu_bar>a, #tool_text').remove();
+  $j('#tool_snap, #view_grid, #rect_panel label, #path_panel label').remove();
+  $j('#g_panel label, #ellipse_panel label, #line label').remove();
+  $j('#text_panel label').remove();
+  $j('#tool_export').remove();
+  $j('#palette').hide();
 }
 
 // Add in extra Method Draw elements
@@ -154,7 +159,7 @@ function addElements() {
             mode.settings.v.lastFile = path;
             mode.settings.save();
           } catch(err) {
-            $(this).val('');
+            $j(this).val('');
             window.alert(robopaint.t('modes.edit.dialogs.error.save') + '\n\n ERR# ' + err.errno + ',  ' + err.code);
             console.log('Error saving file:', err);
           }
@@ -165,34 +170,34 @@ function addElements() {
 
 
   // Add and bind Auto Zoom Button / Menu item
-  $('#zoom_panel').before(
-    $('<button>').addClass('zoomfit zoomfitcanvas')
+  $j('#zoom_panel').before(
+    $j('<button>').addClass('zoomfit zoomfitcanvas')
       .data('zoomtype', 'canvas')
       .attr('title', robopaint.t('modes.edit.buttons.zoomtitle'))
       .text(robopaint.t('modes.edit.buttons.zoom'))
   );
 
-  $('#view_menu .separator').after(
-    $('<div>').addClass('menu_item zoomfit')
+  $j('#view_menu .separator').after(
+    $j('<div>').addClass('menu_item zoomfit')
       .data('zoomtype', 'canvas')
       .text(robopaint.t('modes.edit.menu.view.fitcanvas')),
-    $('<div>').addClass('menu_item zoomfit')
+    $j('<div>').addClass('menu_item zoomfit')
       .data('zoomtype', 'content')
       .text(robopaint.t('modes.edit.menu.view.fitcontent')),
-    $('<div>').addClass('separator')
+    $j('<div>').addClass('separator')
   );
 
-  $('.zoomfit').click(function(){
+  $j('.zoomfit').click(function(){
     methodDraw.zoomChanged(window, $(this).data('zoomtype'));
   })
 
   // Add in easy rotate button
-  $('<label>')
+  $j('<label>')
   .attr({id: 'tool_rotate', 'data-title': robopaint.t('modes.edit.tools.rotate')})
   .addClass('draginput')
   .append(
-    $('<span>').addClass('icon_label').html(robopaint.t('modes.edit.tools.rotate')),
-    $('<div>').addClass('draginput_cell')
+    $j('<span>').addClass('icon_label').html(robopaint.t('modes.edit.tools.rotate')),
+    $j('<div>').addClass('draginput_cell')
       .attr({id: 'rotate', title: robopaint.t('modes.edit.tools.rotatetitle')})
       .click(function(){
         var a = methodDraw.canvas.getRotationAngle();
@@ -207,14 +212,14 @@ function addElements() {
   ).prependTo('#selected_panel');
 
   // Add auto-sizer button
-  $('#canvas_panel').append(
-    $('<h4>').addClass('clearfix').text(robopaint.t('modes.edit.panels.global')),
-    $('<label>')
+  $j('#canvas_panel').append(
+    $j('<h4>').addClass('clearfix').text(robopaint.t('modes.edit.panels.global')),
+    $j('<label>')
       .attr({id: 'tool_autosize', 'data-title': robopaint.t('modes.edit.tools.fitcontent')})
       .addClass('draginput')
       .append(
-        $('<span>').addClass('icon_label').html(robopaint.t('modes.edit.tools.fitcontent')),
-        $('<div>').addClass('draginput_cell')
+        $j('<span>').addClass('icon_label').html(robopaint.t('modes.edit.tools.fitcontent')),
+        $j('<div>').addClass('draginput_cell')
           .attr({
             id: 'autosize',
             title: robopaint.t('modes.edit.tools.fitcontenttitle')
@@ -226,7 +231,7 @@ function addElements() {
   );
 
   // Add in the Watercolor Palette
-  $('#tools_bottom_3').append(buildPalette());
+  $j('#tools_bottom_3').append(buildPalette());
   loadColorsets();
   bindColorSelect();
 
@@ -235,12 +240,12 @@ function addElements() {
 
   // jQuery selector list of objects to recolor
   var types = 'path, rect:not(#canvas_background), circle, ellipse, line, polygon';
-  $('#tools_bottom_3').append(
-    $('<button>')
+  $j('#tools_bottom_3').append(
+    $j('<button>')
       .attr({id:"auto-color", title: robopaint.t('common.action.autocolortitle')})
       .text(robopaint.t('common.action.autocolor'))
       .click(function(){
-        robopaint.utils.autoColor($('#svgcontent'), recover, robopaint.media.currentSet.colors, types);
+        robopaint.utils.autoColor($j('#svgcontent'), recover, robopaint.media.currentSet.colors, types);
         recover = !recover;
       }
     )
@@ -249,20 +254,20 @@ function addElements() {
 
 // Build out the DOM elements for the watercolor eyedropper selection palette
 function buildPalette(){
-  var $main = $('<div>').addClass('palette_robopaint').attr('id', 'colors');
+  var $main = $j('<div>').addClass('palette_robopaint').attr('id', 'colors');
 
   for(var i = 0; i < 8; i++) {
     $main.append(
-      $('<div>').addClass('palette_item color').attr('id', 'color' + i)
+      $j('<div>').addClass('palette_item color').attr('id', 'color' + i)
     );
   }
 
   $main.append(
-    $('<div>').addClass('static palette_item').append(
-      $('<div>')
+    $j('<div>').addClass('static palette_item').append(
+      $j('<div>')
         .attr('title', robopaint.t('common.transparent'))
         .attr('id', 'colorx').text('X'),
-      $('<div>')
+      $j('<div>')
         .attr('title', robopaint.t('common.substrate'))
         .attr('id', 'colornone')
     )
@@ -313,9 +318,9 @@ mode.onMessage = function(channel, data) {
 // Update the rendering of the color set when it changes, called from main.js
 function updateColorSet(){
   var set = robopaint.media.currentSet;
-  $('#colors').attr('class', '').addClass(set.baseClass);
+  $j('#colors').attr('class', '').addClass(set.baseClass);
   for (var i in set.colors) {
-    $('#color' + i)
+    $j('#color' + i)
       .text(robopaint.settings.showcolortext ? set.colors[i].name : "")
       .attr('title', robopaint.settings.showcolortext ? "" : set.colors[i].name);
   }
@@ -323,10 +328,10 @@ function updateColorSet(){
 
 // Bind the click event for each color
 function bindColorSelect() {
-  $('#colors .color, #colors .static div').click(function(e){
-    var isStroke = $('#tool_stroke').hasClass('active');
+  $j('#colors .color, #colors .static div').click(function(e){
+    var isStroke = $j('#tool_stroke').hasClass('active');
     var picker = isStroke ? "stroke" : "fill";
-    var color = robopaint.utils.rgbToHex($(this).css('background-color'));
+    var color = robopaint.utils.rgbToHex($j(this).css('background-color'));
     var paint = null;
     var noUndo = false;
 
@@ -364,13 +369,13 @@ mode.onClose = function(callback){
 function saveBeforeQuit() {
   try {
     // Remove unwanted elements~~~~~~~~~~~~
-    $('#svgcontent title').remove() // Get rid of titles!
+    $j('#svgcontent title').remove() // Get rid of titles!
 
     // Save the top level group objects before moving elements...
-    var $topGroups = $('#svgcontent>g');
+    var $topGroups = $j('#svgcontent>g');
 
     // Move all SVG child elements to SVG root
-    $('#svgcontent>g:last').children().appendTo('#svgcontent');
+    $j('#svgcontent>g:last').children().appendTo('#svgcontent');
     $topGroups.remove(); // Remove editor groupings
 
   } catch(e) {
@@ -387,8 +392,8 @@ function saveBeforeQuit() {
 function autoSizeContent() {
   methodDraw.canvas.selectAllInCurrentLayer();
   methodDraw.canvas.groupSelectedElements();
-  var box = methodDraw.canvas.getBBox($('#selectedBox0')[0]);
-  var c = {w: $('#svgcontent').attr('width'), h: $('#svgcontent').attr('height')};
+  var box = methodDraw.canvas.getBBox($j('#selectedBox0')[0]);
+  var c = {w: $j('#svgcontent').attr('width'), h: $j('#svgcontent').attr('height')};
   var margin = 5;
   var scale = 1;
   var z = methodDraw.canvas.getZoom();
@@ -407,7 +412,7 @@ function autoSizeContent() {
   var sx = (box.x*(1-scale)) / z;
   var sy = (box.y*(1-scale)) / z;
 
-  var $e = $(methodDraw.canvas.getSelectedElems()[0]);
+  var $e = $j(methodDraw.canvas.getSelectedElems()[0]);
   $e.attr('transform', 'translate(' + (x+sx) + ',' + (y+sy) + ') scale(' + scale + ')');
 
   // Ungroup, and clear selection.. as if nothing had happened!
@@ -417,6 +422,6 @@ function autoSizeContent() {
 
 // Resize specific controls to match window requirements not easily done with CSS
 function responsiveResize() {
-  var h = $(window).height();
-  $('#tools_top').height(h-61);
+  var h = $j(window).height();
+  $j('#tools_top').height(h-61);
 }
