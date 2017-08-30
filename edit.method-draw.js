@@ -14,7 +14,6 @@ var $j = require('jquery');
 // Mode load complete...
 mode.pageInitReady = function() {
 
-//return;
   // 1. Split HTML into head and body.
   // 2. Inject Body, then HEAD (scripts should load).
   var html = fs.readFileSync(
@@ -27,9 +26,6 @@ mode.pageInitReady = function() {
   // Cleanup head.
   var head = parts[0];
   head = head.replace(/<((!DOCTYPE )?html|(\/)?head)>/g, '');
-  //head = head.replace(/lib\/jquery.js/g, path.join(
-  //  mode.path.dir, 'node_modules', 'jquery-migrate', 'dist', 'jquery-migrate.js'
-  //));
   head = $j('head')[0].innerHTML + head;
 
   // Cleanup body.
