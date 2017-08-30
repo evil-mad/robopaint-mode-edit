@@ -116,12 +116,12 @@ function addElements() {
             {name: 'Scalable Vector Graphics ', extensions: ['svg']}
           ]
         },
-        function(path) {
-          if (!path) return; // Cancelled!
+        function(filePath) {
+          if (!filePath) return; // Cancelled!
 
           // Verify .svg extension
-          if (path.split('.').pop().toLowerCase() !== 'svg') {
-            path += '.svg';
+          if (filePath.split('.').pop().toLowerCase() !== 'svg') {
+            filePath += '.svg';
           }
 
           // Clean out lines 2-6 (& 8) (if existing)
@@ -151,8 +151,8 @@ function addElements() {
           }
 
           try {
-            fs.writeFileSync(path, svg);
-            mode.settings.v.lastFile = path;
+            fs.writeFileSync(filePath, svg);
+            mode.settings.v.lastFile = filePath;
             mode.settings.save();
           } catch(err) {
             $j(this).val('');
